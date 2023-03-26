@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xbhog.mapper.UserMapper">
+   <select id="getUserInfo" resultType="User">
+       select * from user
+       <where>
+           <if test="name != null and name != ''">
+               and name=#{name}
+           </if>
+           <if test="age != null and name != ''">
+               and age=#{age}
+           </if>
+       </where>
+   </select>
+
+</mapper>

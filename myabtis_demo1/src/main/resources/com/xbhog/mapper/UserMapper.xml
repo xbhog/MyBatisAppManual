@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xbhog.mapper.UserMapper">
+    <insert id="insertUser">
+        insert into user values (null,"ylj","111111")
+    </insert>
+    <select id="getUserAll" resultType="com.xbhog.pojo.User">
+        select * from user
+    </select>
+    <select id="getUserByName" resultType="User">
+        <!--select * from user where name=#{username}-->
+        select * from user where name='${username}'
+    </select>
+    <select id="getUserByNameAndPwd" resultType="user">
+        <!--select  * from user where name=#{arg0} and pwd=#{arg1}-->
+        select  * from user where name='${param1}' and pwd='${param2}'
+    </select>
+    <select id="checkLogin" resultType="user">
+        select * from user where name=#{username}
+    </select>
+    <insert id="insertUserByUser" >
+        insert into user values (null,#{name},#{pwd});
+    </insert>
+    <select id="getUserByParams" resultType="user">
+        select * from user where name=#{username};
+    </select>
+    <select id="getCount" resultType="int">
+        select count(1)
+        from user;
+    </select>
+
+    <select id="getUserToMap" resultType="map">
+        select *
+        from user;
+    </select>
+    <select id="testMohu" resultType="user">
+        <!--select * from user where name like '%${mohu}%'-->
+         <!--select * from user where name like concat('%',#{mohu},'%')-->
+        select * from user where name like "%"#{mohu}"%"
+    </select>
+    <delete id="deleteAll">
+        delete from user where id in (#{ids});
+    </delete>
+    <select id="getAllByTableName" resultType="user">
+        select * from ${tableName};
+    </select>
+    <insert id="insertUserKey" parameterType="user" useGeneratedKeys="true" keyProperty="id">
+        insert into user values (null,#{name},#{pwd});
+    </insert>
+    <select id="getDemo" resultType="User">
+        select * from user
+        <where>
+            <if test="name != null and name != ''">
+                and name =#{name}
+            </if>
+            <if test="pwd != null and pwd != ''">
+                and pwd=#{pwd};
+            </if>
+        </where>
+    </select>
+    <insert id="insertAllUser">
+        insert into user values
+        <foreach collection="users" item="user" separator=",">
+            (null,#{user.name},#{user.age},#{user.pwd})
+        </foreach>
+    </insert>
+    <delete id="deleteAllUser">
+        delete from user where id in
+        <foreach collection="userIds" item="userId" separator="," open="(" close=")">
+            #{userId}
+        </foreach>
+    </delete>
+    <sql id="userColums">
+        name,age,pwd
+    </sql>
+    <select id="getAllUser" resultType="user">
+        select <include refid="userColums"></include> from user where id=#{id};
+    </select>
+</mapper>

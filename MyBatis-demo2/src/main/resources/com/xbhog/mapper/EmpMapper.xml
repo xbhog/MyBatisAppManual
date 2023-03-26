@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xbhog.mapper.EmpMapper">
+    <!--List<Emp> getAllEmp();-->
+
+    <select id="getAllEmp" resultType="emp">
+        <!--select * from t_emp;-->
+        select * from t_emp;
+    </select>
+    <!--多对一常用association标签-->
+    <resultMap id="getEmp" type="Emp">
+        <id property="eid" column="eid"/>
+        <result property="age" column="age"/>
+        <result property="empName" column="emp_name"/>
+        <association property="dept" javaType="Dept">
+            <id property="did" column="did"/>
+            <result property="deptName" column="dept_name"/>
+        </association>
+    </resultMap>
+    <resultMap id="getEmpSetpOne" type="Emp">
+        <id property="eid" column="eid"/>
+        <result property="age" column="age"/>
+        <result property="empName" column="emp_name"/>
+        <!--select：设置分步查询，查询某个属性的值的sql的标识（namespace.sqlId）
+        column：将sql以及查询结果中的某个字段设置为分步查询的条件
+        在mybatis-config.xml开启懒加载，
+        fetchType：控制延迟加载的效果，懒加载开启是前提，eager,该立即执行，lazy表示延迟加载(用到啥执行啥)
+        -->
+        <association property="dept"
+                     select="com.xbhog.mapper.DeptMapper.getDeptSetupTwo"
+                     column="did"/>
+    </resultMap>
+    <select id="getEmpAndDept" resultMap="getEmp">
+        select * from t_emp emp left join t_dept dept on emp.eid = dept.did where eid=#{eid};
+    </select>
+    <select id="getEmpAndDeptStepOne" resultMap="getEmpSetpOne">
+        select * from t_emp where t_emp.eid=#{eid}
+    </select>
+
+    <resultMap id="getDeptAndEmp" type="Dept">
+        <id property="did" column="did"/>
+        <result property="deptName" column="dept_name"/>
+        <collection property="emps"
+                    select="com.xbhog.mapper.DeptMapper.getDeptAndEmpByStepTwo"
+                    column="did"/>
+    </resultMap>
+    <select id="getDeptAndEmpByStepOne" resultMap="getDeptAndEmp">
+        select * from t_dept dept where dept.did=#{did};
+    </select>
+
+    <resultMap id="getEmpAndDept" type="Emp">
+        <id property="eid" column="eid"/>
+        <result property="empName" column="emp_name"/>
+        <result property="age" column="age"/>
+        <result property="dept.did" column="did"/>
+        <result property="dept.deptName" column="dept_name"/>
+
+    </resultMap>
+    <select id="getEmpAllDate" resultMap="getEmpAndDept">
+        select * from t_emp e left join t_dept d on e.did=d.did where
+        e.eid=#{eid}
+    </select>
+
+</mapper>
